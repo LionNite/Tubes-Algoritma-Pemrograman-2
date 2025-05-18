@@ -1,0 +1,8 @@
+Anggota Kelompok-8 
+
+1. ERASTUS LIUBETA SEPTIAN	(103072400020)
+2. ABIYYU SYAUQI ADMAJA		(103072430010)
+3. GALANG HERJUNO MULYA		(103072430006)
+
+Tema : Kesehatan
+Membuat proyek sederhana untuk mengelola data dalam ruang lingkup Rumah sakit. 
