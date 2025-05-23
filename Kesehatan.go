@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 type psien struct {
@@ -36,9 +37,9 @@ var daftarDokter = []doktr{
 }
 
 var daftarObat = []obt{
-	{"OBT001", "Paracetamol", 100, 5000, "Pereda Nyeri"},
-	{"OBT002", "Amoxicillin", 50, 15000, "Antibiotik"},
-	{"OBT003", "Omeprazole", 75, 12000, "Antasida"},
+	{"OBT001", "Paracetamol", 100, 5000, "pereda_nyeri"},
+	{"OBT002", "Amoxicillin", 50, 15000, "antibiotik"},
+	{"OBT003", "Omeprazole", 75, 12000, "antasida"},
 }
 
 func main() {
@@ -47,8 +48,12 @@ func main() {
 
 	for {
 		tampilkanMenu()
-		fmt.Print("Pilih menu (1-7): ")
-		fmt.Scanln(&pilihan)
+		fmt.Print("Pilih menu (1-8): ")
+		_, err := fmt.Scanln(&pilihan)
+		if err != nil || pilihan < 1 || pilihan > 8 {
+			fmt.Println("Input tidak valid! Harap masukkan angka antara 1-8.")
+			continue
+		}
 
 		switch pilihan {
 		case 1:
@@ -62,42 +67,123 @@ func main() {
 		case 5:
 			cariObatDenganBinarySearch()
 		case 6:
-			tampilkanStatistik(daftarPasien)
+			cariDokterDenganSequentialSearch()
 		case 7:
+			tampilkanStatistik(daftarPasien)
+		case 8:
 			fmt.Println("Terima kasih telah menggunakan sistem ini!")
 			return
-		default:
-			fmt.Println("Pilihan tidak valid!")
 		}
 	}
 }
 
 func tampilkanMenu() {
 	fmt.Println("\nSistem Manajemen Kesehatan")
-	fmt.Print("1. Tambah Pasien\t\t\t\t\t2. Tampilkan Pasien Terurut Prioritas (Bubble Sort)\n")
-	fmt.Println("3. Tampilkan Obat Terurut Harga (Selection Sort)\t4. Tampilkan Jadwal Dokter Terurut Nama (Insertion Sort)")
-	fmt.Println("5. Cari Obat Berdasarkan Kategori (Binary Search)\t6. Tampilkan Statistik")
-	fmt.Println("7. Keluar")
+	fmt.Println("1. Tambah Pasien")
+	fmt.Println("2. Tampilkan Pasien Terurut Prioritas (Bubble Sort)")
+	fmt.Println("3. Tampilkan Obat Terurut Harga (Selection Sort)")
+	fmt.Println("4. Tampilkan Jadwal Dokter Terurut Nama (Insertion Sort)")
+	fmt.Println("5. Cari Obat Berdasarkan Kategori (Binary Search)")
+	fmt.Println("6. Cari Dokter Berdasarkan Spesialisasi (Sequential Search)")
+	fmt.Println("7. Tampilkan Statistik")
+	fmt.Println("8. Keluar")
 }
 
 func tambahPasien(data []psien) []psien {
 	var p psien
-	fmt.Print("ID: ")
-	fmt.Scanln(&p.ID)
-	fmt.Print("Nama: ")
-	fmt.Scanln(&p.Nama)
-	fmt.Print("Umur: ")
-	fmt.Scanln(&p.Umur)
-	fmt.Print("Diagnosis: ")
-	fmt.Scanln(&p.Diagnosis)
-	fmt.Print("Prioritas (1-5): ")
-	fmt.Scanln(&p.Prioritas)
+
+	for {
+		fmt.Print("ID (harus alfanumerik): ")
+		fmt.Scanln(&p.ID)
+		if isAlphaNumeric(p.ID) {
+			break
+		}
+		fmt.Println("Error: ID harus alfanumerik (huruf dan/atau angka)")
+	}
+
+	for {
+		fmt.Print("Nama (harus huruf): ")
+		fmt.Scanln(&p.Nama)
+		if isAlphaSpace(p.Nama) {
+			break
+		}
+		fmt.Println("Error: Nama harus berupa huruf")
+	}
+
+	for {
+		fmt.Print("Umur: ")
+		_, err := fmt.Scanln(&p.Umur)
+		if err == nil {
+			break
+		}
+		fmt.Println("Error: Umur harus berupa angka")
+		var discard string
+		fmt.Scanln(&discard)
+	}
+
+	for {
+		fmt.Print("Diagnosis: ")
+		fmt.Scanln(&p.Diagnosis)
+		if strings.TrimSpace(p.Diagnosis) != "" && hasLetters(p.Diagnosis) {
+			break
+		}
+		fmt.Println("Error: Diagnosis harus mengandung huruf (boleh ada angka untuk stadium)")
+	}
+
+	for {
+		fmt.Print("Prioritas (1-5): ")
+		_, err := fmt.Scanln(&p.Prioritas)
+		if err != nil {
+			var discard string
+			fmt.Scanln(&discard)
+			fmt.Println("Error: Prioritas harus angka antara 1-5")
+			continue
+		}
+		if p.Prioritas >= 1 && p.Prioritas <= 5 {
+			break
+		}
+		fmt.Println("Error: Prioritas harus antara 1-5")
+	}
+
+	fmt.Println("Pasien berhasil ditambahkan!")
+	fmt.Println()
 
 	return append(data, p)
 }
 
-// Bubble Sort
+func hasLetters(s string) bool {
+	for _, r := range s {
+		if unicode.IsLetter(r) {
+			return true
+		}
+	}
+	return false
+}
+
+func isAlphaNumeric(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) {
+			return false
+		}
+	}
+	return s != ""
+}
+
+func isAlphaSpace(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLetter(r) && !unicode.IsSpace(r) {
+			return false
+		}
+	}
+	return s != ""
+}
+
 func tampilkanPasienTerurut(data []psien) {
+	if len(data) == 0 {
+		fmt.Println("Belum ada pasien terdaftar.")
+		return
+	}
+
 	n := len(data)
 	for i := 0; i < n-1; i++ {
 		for j := 0; j < n-i-1; j++ {
@@ -113,8 +199,12 @@ func tampilkanPasienTerurut(data []psien) {
 	}
 }
 
-// Selection Sort
 func tampilkanObatTerurut() {
+	if len(daftarObat) == 0 {
+		fmt.Println("Belum ada obat terdaftar.")
+		return
+	}
+
 	obat := make([]obt, len(daftarObat))
 	copy(obat, daftarObat)
 
@@ -130,21 +220,25 @@ func tampilkanObatTerurut() {
 	}
 
 	fmt.Println("\nObat Terurut Harga:")
-	fmt.Println("Kode\tNama\t\t\tStok\tHarga\t\tKategori")
+	fmt.Println("Kode\tNama\t\tStok\tHarga\t\tKategori")
 	for _, o := range obat {
 		fmt.Printf("%s\t%-15s\t%d\tRp%.2f\t%s\n", o.Kode, o.Nama, o.Stok, o.Harga, o.Kategori)
 	}
 }
 
-// Insertion Sort
 func tampilkanJadwalDokterTerurut() {
+	if len(daftarDokter) == 0 {
+		fmt.Println("Belum ada dokter terdaftar.")
+		return
+	}
+
 	dokter := make([]doktr, len(daftarDokter))
 	copy(dokter, daftarDokter)
 
 	for i := 1; i < len(dokter); i++ {
 		key := dokter[i]
 		j := i - 1
-		for j >= 0 && dokter[j].Nama > key.Nama {
+		for j >= 0 && strings.ToLower(dokter[j].Nama) > strings.ToLower(key.Nama) {
 			dokter[j+1] = dokter[j]
 			j--
 		}
@@ -155,14 +249,17 @@ func tampilkanJadwalDokterTerurut() {
 	fmt.Printf("%-6s %-20s %-15s %-30s\n", "ID", "Nama", "Spesialis", "Jadwal")
 	fmt.Println("############################################################################")
 
-	// Isi tabel
 	for _, d := range dokter {
 		fmt.Printf("%-6s %-20s %-15s %-30s\n", d.ID, d.Nama, d.Spesialisasi, d.Jadwal)
 	}
-
 }
 
 func cariObatDenganBinarySearch() {
+	if len(daftarObat) == 0 {
+		fmt.Println("Belum ada obat terdaftar.")
+		return
+	}
+
 	obat := make([]obt, len(daftarObat))
 	copy(obat, daftarObat)
 
@@ -176,24 +273,29 @@ func cariObatDenganBinarySearch() {
 		obat[j+1] = key
 	}
 
-	fmt.Print("Masukkan kategori yang dicari: ")
 	var kategori string
-	fmt.Scanln(&kategori)
-	kategori = strings.ToLower(kategori)
+	for {
+		fmt.Print("Masukkan kategori yang dicari: ")
+		fmt.Scanln(&kategori)
+		if strings.TrimSpace(kategori) != "" {
+			break
+		}
+		fmt.Println("Error: Kategori tidak boleh kosong")
+	}
+	searchTerm := strings.ToLower(kategori)
 
-	// Binary search
 	low, high := 0, len(obat)-1
 	found := false
 	for low <= high {
 		mid := (low + high) / 2
 		midKategori := strings.ToLower(obat[mid].Kategori)
 
-		if midKategori == kategori {
+		if midKategori == searchTerm {
 			fmt.Println("Obat ditemukan:")
 			fmt.Printf("%s - %s - Rp%.2f - %s\n", obat[mid].Kode, obat[mid].Nama, obat[mid].Harga, obat[mid].Kategori)
 			found = true
 			break
-		} else if midKategori < kategori {
+		} else if midKategori < searchTerm {
 			low = mid + 1
 		} else {
 			high = mid - 1
@@ -201,6 +303,40 @@ func cariObatDenganBinarySearch() {
 	}
 	if !found {
 		fmt.Println("Obat dengan kategori tersebut tidak ditemukan.")
+	}
+}
+
+func cariDokterDenganSequentialSearch() {
+	if len(daftarDokter) == 0 {
+		fmt.Println("Belum ada dokter terdaftar.")
+		return
+	}
+
+	var spesialisasi string
+	for {
+		fmt.Print("Masukkan spesialisasi dokter yang dicari: ")
+		fmt.Scanln(&spesialisasi)
+		if strings.TrimSpace(spesialisasi) != "" {
+			break
+		}
+		fmt.Println("Error: Spesialisasi tidak boleh kosong")
+	}
+	searchTerm := strings.ToLower(spesialisasi)
+
+	found := false
+	fmt.Println("\nHasil Pencarian Dokter:")
+	fmt.Printf("%-6s %-20s %-15s %-30s\n", "ID", "Nama", "Spesialis", "Jadwal")
+	fmt.Println("############################################################################")
+
+	for _, d := range daftarDokter {
+		if strings.Contains(strings.ToLower(d.Spesialisasi), searchTerm) {
+			fmt.Printf("%-6s %-20s %-15s %-30s\n", d.ID, d.Nama, d.Spesialisasi, d.Jadwal)
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Println("Tidak ditemukan dokter dengan spesialisasi tersebut.")
 	}
 }
 
