@@ -31,7 +31,6 @@ type Obat struct {
 	Kategori string
 }
 
-// --- DATA GLOBAL (STATE APLIKASI) ---
 var daftarDokter = []Dokter{
 	{"D001", "Dr. Ahmad", "Umum", "Senin-Jumat 08:00-16:00"},
 	{"D002", "Dr. Siti", "Kardio", "Selasa-Kamis 09:00-17:00"},
@@ -46,8 +45,6 @@ var daftarObat = []Obat{
 }
 
 var daftarPasien []Pasien
-
-// --- FUNGSI-FUNGSI LOGIKA (Nama Fungsi diawali huruf kapital) ---
 
 func TambahPasien(p Pasien) {
 	daftarPasien = append(daftarPasien, p)
