@@ -331,28 +331,28 @@ func showStatistics() {
 func showMainMenu() {
 	title := widget.NewLabelWithStyle("Sistem Manajemen Kesehatan", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 
-	btn1 := widget.NewButton("1. Tambah Pasien", func() {
+	btn1 := widget.NewButton("Tambah Pasien", func() {
 		showAddPatientForm()
 	})
-	btn2 := widget.NewButton("2. Tampilkan Pasien Terurut Prioritas", func() {
+	btn2 := widget.NewButton("Tampilkan Pasien Terurut Prioritas", func() {
 		showSortedPatients()
 	})
-	btn3 := widget.NewButton("3. Tampilkan Obat Terurut Harga", func() {
+	btn3 := widget.NewButton("Tampilkan Obat Terurut Harga", func() {
 		showSortedMedicines()
 	})
-	btn4 := widget.NewButton("4. Tampilkan Jadwal Dokter Terurut Nama", func() {
+	btn4 := widget.NewButton("Tampilkan Jadwal Dokter Terurut Nama", func() {
 		showSortedDoctors()
 	})
-	btn5 := widget.NewButton("5. Cari Obat Berdasarkan Kategori", func() {
+	btn5 := widget.NewButton("Cari Obat Berdasarkan Kategori", func() {
 		showMedicineSearch()
 	})
-	btn6 := widget.NewButton("6. Cari Dokter Berdasarkan Spesialisasi", func() {
+	btn6 := widget.NewButton("Cari Dokter Berdasarkan Spesialisasi", func() {
 		showDoctorSearch()
 	})
-	btn7 := widget.NewButton("7. Tampilkan Statistik", func() {
+	btn7 := widget.NewButton("Tampilkan Statistik", func() {
 		showStatistics()
 	})
-	btn8 := widget.NewButton("8. Keluar", func() {
+	btn8 := widget.NewButton("Keluar", func() {
 		myWindow.Close()
 	})
 
