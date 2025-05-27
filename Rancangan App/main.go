@@ -256,6 +256,7 @@ func showSortedMedicines() {
 		return
 	}
 
+	// Selection sort by price
 	medicines := make([]obt, len(daftarObat))
 	copy(medicines, daftarObat)
 	n := len(medicines)
@@ -416,12 +417,12 @@ func showMedicineSearch() {
 			if midCategory == searchTerm {
 				// Found a match, collect all medicines with this category
 				foundMedicines = append(foundMedicines, medicines[mid])
-
+				
 				// Check left side
 				for i := mid - 1; i >= low && strings.ToLower(medicines[i].Kategori) == searchTerm; i-- {
 					foundMedicines = append(foundMedicines, medicines[i])
 				}
-
+				
 				// Check right side
 				for i := mid + 1; i <= high && strings.ToLower(medicines[i].Kategori) == searchTerm; i++ {
 					foundMedicines = append(foundMedicines, medicines[i])
