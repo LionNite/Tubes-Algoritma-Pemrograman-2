@@ -1,0 +1,188 @@
+// logic.go
+package main
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+	"unicode"
+)
+
+type Pasien struct {
+	ID        string
+	Nama      string
+	Umur      int
+	Diagnosis string
+	Prioritas int
+}
+
+type Dokter struct {
+	ID           string
+	Nama         string
+	Spesialisasi string
+	Jadwal       string
+}
+
+type Obat struct {
+	Kode     string
+	Nama     string
+	Stok     int
+	Harga    float64
+	Kategori string
+}
+
+// --- DATA GLOBAL (STATE APLIKASI) ---
+var daftarDokter = []Dokter{
+	{"D001", "Dr. Ahmad", "Umum", "Senin-Jumat 08:00-16:00"},
+	{"D002", "Dr. Siti", "Kardio", "Selasa-Kamis 09:00-17:00"},
+	{"D003", "Dr. Budi", "Anak", "Rabu-Sabtu 10:00-18:00"},
+	{"D004", "Dr. Zaek", "Kulit", "Senin-Sabtu 10:00-18:00"},
+}
+
+var daftarObat = []Obat{
+	{"OBT001", "Paracetamol", 100, 5000, "pereda_nyeri"},
+	{"OBT002", "Amoxicillin", 50, 15000, "antibiotik"},
+	{"OBT003", "Omeprazole", 75, 12000, "antasida"},
+}
+
+var daftarPasien []Pasien
+
+// --- FUNGSI-FUNGSI LOGIKA (Nama Fungsi diawali huruf kapital) ---
+
+func TambahPasien(p Pasien) {
+	daftarPasien = append(daftarPasien, p)
+}
+
+func GetPasienTerurutPrioritas() []Pasien {
+	patients := make([]Pasien, len(daftarPasien))
+	copy(patients, daftarPasien)
+	n := len(patients)
+	for i := 0; i < n-1; i++ {
+		for j := 0; j < n-i-1; j++ {
+			if patients[j].Prioritas > patients[j+1].Prioritas {
+				patients[j], patients[j+1] = patients[j+1], patients[j]
+			}
+		}
+	}
+	return patients
+}
+
+func GetObatTerurutHarga() []Obat {
+	medicines := make([]Obat, len(daftarObat))
+	copy(medicines, daftarObat)
+	n := len(medicines)
+	for i := 0; i < n-1; i++ {
+		min := i
+		for j := i + 1; j < n; j++ {
+			if medicines[j].Harga < medicines[min].Harga {
+				min = j
+			}
+		}
+		medicines[i], medicines[min] = medicines[min], medicines[i]
+	}
+	return medicines
+}
+
+func GetDokterTerurutNama() []Dokter {
+	doctors := make([]Dokter, len(daftarDokter))
+	copy(doctors, daftarDokter)
+	for i := 1; i < len(doctors); i++ {
+		key := doctors[i]
+		j := i - 1
+		for j >= 0 && strings.ToLower(doctors[j].Nama) > strings.ToLower(key.Nama) {
+			doctors[j+1] = doctors[j]
+			j--
+		}
+		doctors[j+1] = key
+	}
+	return doctors
+}
+
+func CariObatByKategori(searchTerm string) []Obat {
+	medicines := make([]Obat, len(daftarObat))
+	copy(medicines, daftarObat)
+	sort.Slice(medicines, func(i, j int) bool {
+		return strings.ToLower(medicines[i].Kategori) < strings.ToLower(medicines[j].Kategori)
+	})
+	searchTerm = strings.ToLower(searchTerm)
+
+	low, high := 0, len(medicines)-1
+	var foundMedicines []Obat
+	for low <= high {
+		mid := (low + high) / 2
+		midCategory := strings.ToLower(medicines[mid].Kategori)
+
+		if midCategory == searchTerm {
+			foundMedicines = append(foundMedicines, medicines[mid])
+			for i := mid - 1; i >= low && strings.ToLower(medicines[i].Kategori) == searchTerm; i-- {
+				foundMedicines = append(foundMedicines, medicines[i])
+			}
+			for i := mid + 1; i <= high && strings.ToLower(medicines[i].Kategori) == searchTerm; i++ {
+				foundMedicines = append(foundMedicines, medicines[i])
+			}
+			break
+		} else if midCategory < searchTerm {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return foundMedicines
+}
+
+func CariDokterBySpesialisasi(searchTerm string) []Dokter {
+	var foundDoctors []Dokter
+	searchTerm = strings.ToLower(searchTerm)
+	for _, d := range daftarDokter {
+		if strings.Contains(strings.ToLower(d.Spesialisasi), searchTerm) {
+			foundDoctors = append(foundDoctors, d)
+		}
+	}
+	return foundDoctors
+}
+
+func GetStatistik() string {
+	return fmt.Sprintf(
+		"Statistik:\n\n"+
+			"Jumlah Pasien: %d\n"+
+			"Jumlah Dokter: %d\n"+
+			"Jumlah Obat:   %d\n",
+		len(daftarPasien),
+		len(daftarDokter),
+		len(daftarObat),
+	)
+}
+
+// --- FUNGSI HELPER / VALIDASI (Juga dikapitalisasi) ---
+func IsAlphaNumeric(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if !unicode.IsLetter(r) && !unicode.IsNumber(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsAlphaSpace(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if !unicode.IsLetter(r) && !unicode.IsSpace(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func HasLetters(s string) bool {
+	for _, r := range s {
+		if unicode.IsLetter(r) {
+			return true
+		}
+	}
+	return false
+}
