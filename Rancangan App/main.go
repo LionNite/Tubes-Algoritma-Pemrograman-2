@@ -55,7 +55,7 @@ var daftarPasien []psien
 var myApp fyne.App
 var myWindow fyne.Window
 
-func main() {
+func RunApk() {
 	myApp = app.New()
 	myWindow = myApp.NewWindow("Sistem Manajemen Kesehatan")
 	myWindow.Resize(fyne.NewSize(800, 600))
@@ -417,12 +417,12 @@ func showMedicineSearch() {
 			if midCategory == searchTerm {
 				// Found a match, collect all medicines with this category
 				foundMedicines = append(foundMedicines, medicines[mid])
-				
+
 				// Check left side
 				for i := mid - 1; i >= low && strings.ToLower(medicines[i].Kategori) == searchTerm; i-- {
 					foundMedicines = append(foundMedicines, medicines[i])
 				}
-				
+
 				// Check right side
 				for i := mid + 1; i <= high && strings.ToLower(medicines[i].Kategori) == searchTerm; i++ {
 					foundMedicines = append(foundMedicines, medicines[i])
