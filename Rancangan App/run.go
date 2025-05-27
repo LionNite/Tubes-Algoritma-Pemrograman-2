@@ -1,6 +1,7 @@
-// run.go
+/* run.go
 package main
 
 func main() {
 	RunApk()
 }
+*/

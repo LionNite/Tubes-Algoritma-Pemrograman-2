@@ -55,7 +55,7 @@ var daftarPasien []psien
 var myApp fyne.App
 var myWindow fyne.Window
 
-func RunApk() {
+func main() {
 	myApp = app.New()
 	myWindow = myApp.NewWindow("Sistem Manajemen Kesehatan")
 	myWindow.Resize(fyne.NewSize(800, 600))
@@ -256,7 +256,6 @@ func showSortedMedicines() {
 		return
 	}
 
-	// Selection sort by price
 	medicines := make([]obt, len(daftarObat))
 	copy(medicines, daftarObat)
 	n := len(medicines)
