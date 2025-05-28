@@ -46,3 +46,7 @@ Pastikan Anda berada di dalam folder `NeoMedix` saat menjalankan perintah ini di
 
 ```bash
 go build -ldflags="-H=windowsgui -s -w" -o ../NeoMedix.exe
+
+```bash
+upx --best --lzma NeoMedix.exe
+
