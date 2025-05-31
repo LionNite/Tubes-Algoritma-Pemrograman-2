@@ -90,7 +90,13 @@ func showSortedPatients() {
 	list := widget.NewList(
 		func() int { return len(patients) },
 		func() fyne.CanvasObject {
-			return container.NewGridWithColumns(5, widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""))
+			return container.NewGridWithColumns(5,
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{}),
+			)
 		},
 		func(i widget.ListItemID, item fyne.CanvasObject) {
 			c := item.(*fyne.Container)
@@ -103,16 +109,24 @@ func showSortedPatients() {
 	)
 
 	header := container.NewGridWithColumns(5,
-		widget.NewLabelWithStyle("ID", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Umur", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Diagnosis", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Prioritas", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Umur", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Diagnosis", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Prioritas", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 	)
 
 	content := container.NewBorder(
-		container.NewVBox(widget.NewLabelWithStyle("Pasien Terurut Prioritas", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}), header),
-		widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+		container.NewVBox(
+			widget.NewLabelWithStyle("Pasien Terurut Prioritas", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+			layout.NewSpacer(),
+		),
 		nil, nil,
 		list,
 	)
@@ -229,32 +243,46 @@ func showMedicineSearchResults(medicines []Obat) {
 	list := widget.NewList(
 		func() int { return len(medicines) },
 		func() fyne.CanvasObject {
-			return container.NewGridWithColumns(5, widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""))
+			return container.NewGridWithColumns(5,
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignTrailing, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+			)
 		},
 		func(i widget.ListItemID, o fyne.CanvasObject) {
 			c := o.(*fyne.Container)
 			c.Objects[0].(*widget.Label).SetText(medicines[i].Kode)
 			c.Objects[1].(*widget.Label).SetText(medicines[i].Nama)
 			c.Objects[2].(*widget.Label).SetText(strconv.Itoa(medicines[i].Stok))
-			c.Objects[3].(*widget.Label).SetText(fmt.Sprintf("Rp%.2f", medicines[i].Harga))
+			c.Objects[3].(*widget.Label).SetText(fmt.Sprintf("Rp,%.2f", medicines[i].Harga))
 			c.Objects[4].(*widget.Label).SetText(medicines[i].Kategori)
 		},
 	)
-
 	header := container.NewGridWithColumns(5,
-		widget.NewLabelWithStyle("Kode", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Stok", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Harga", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Kategori", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Kode", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Stok", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Harga", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Kategori", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 	)
 
 	content := container.NewBorder(
-		container.NewVBox(widget.NewLabelWithStyle("Hasil Pencarian Obat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}), header),
-		widget.NewButton("Kembali ke Pencarian", func() { showMedicineSearch() }),
+		container.NewVBox(
+			widget.NewLabelWithStyle("Hasil Pencarian Obat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Kembali ke Pencarian", func() { showMedicineSearch() }),
+			layout.NewSpacer(),
+		),
 		nil, nil,
 		list,
 	)
+
 	myWindow.SetContent(content)
 }
 
@@ -286,7 +314,12 @@ func showDoctorSearchResults(doctors []Dokter) {
 	list := widget.NewList(
 		func() int { return len(doctors) },
 		func() fyne.CanvasObject {
-			return container.NewGridWithColumns(4, widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""), widget.NewLabel(""))
+			return container.NewGridWithColumns(4,
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+				widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{}),
+			)
 		},
 		func(i widget.ListItemID, o fyne.CanvasObject) {
 			c := o.(*fyne.Container)
@@ -298,15 +331,23 @@ func showDoctorSearchResults(doctors []Dokter) {
 	)
 
 	header := container.NewGridWithColumns(4,
-		widget.NewLabelWithStyle("ID", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Spesialisasi", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Jadwal", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Spesialisasi", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Jadwal", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 	)
 
 	content := container.NewBorder(
-		container.NewVBox(widget.NewLabelWithStyle("Hasil Pencarian Dokter", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}), header),
-		widget.NewButton("Kembali ke Pencarian", func() { showDoctorSearch() }),
+		container.NewVBox(
+			widget.NewLabelWithStyle("Hasil Pencarian Dokter", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Kembali ke Pencarian", func() { showDoctorSearch() }),
+			layout.NewSpacer(),
+		),
 		nil, nil,
 		list,
 	)
@@ -315,16 +356,300 @@ func showDoctorSearchResults(doctors []Dokter) {
 }
 
 func showStatistics() {
-	stats := GetStatistik()
+	patients := GetPasienTerurutPrioritas()
+	doctors := GetDokterTerurutNama()
+	medicines := GetObatTerurutHarga()
 
-	content := container.NewVBox(
-		widget.NewLabelWithStyle("Statistik Sistem", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		layout.NewSpacer(),
-		widget.NewLabel(stats),
-		layout.NewSpacer(),
-		widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+	// Create tabbed interface with all sections
+	tabs := container.NewAppTabs(
+		container.NewTabItem("📊 Ringkasan", createSummaryTab(patients, doctors, medicines)),
+		container.NewTabItem("👨‍⚕️ Dokter", createDoctorTab(doctors)),
+		container.NewTabItem("💊 Obat", createMedicineTab(medicines)),
+		container.NewTabItem("👥 Pasien", createPatientTab(patients)),
 	)
-	myWindow.SetContent(container.NewCenter(content))
+	tabs.SetTabLocation(container.TabLocationTop)
+
+	// Main container with border layout
+	mainContainer := container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle("STATISTIK LENGKAP SISTEM", fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Monospace: true}),
+			createSummaryRow(len(patients), len(doctors), len(medicines)),
+			widget.NewSeparator(),
+		),
+		container.NewCenter(
+			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+		),
+		nil,
+		nil,
+		tabs,
+	)
+
+	myWindow.SetContent(mainContainer)
+	myWindow.Resize(fyne.NewSize(1200, 800)) // Wider window for better data display
+}
+
+func createSummaryTab(patients []Pasien, doctors []Dokter, medicines []Obat) fyne.CanvasObject {
+	// Count patients by priority
+	priorityCounts := make(map[int]int)
+	for _, p := range patients {
+		priorityCounts[p.Prioritas]++
+	}
+
+	// Create statistics text
+	statsText := fmt.Sprintf(
+		"📌 Total Pasien: %d\n"+
+			"   Prioritas 1: %d\n"+
+			"   Prioritas 2: %d\n"+
+			"   Prioritas 3: %d\n"+
+			"   Prioritas 4: %d\n"+
+			"   Prioritas 5: %d\n\n"+
+			"👨‍⚕️ Total Dokter: %d\n"+
+			"   Spesialisasi: %d jenis\n\n"+
+			"💊 Total Obat: %d\n"+
+			"   Kategori: %d jenis",
+		len(patients),
+		priorityCounts[1],
+		priorityCounts[2],
+		priorityCounts[3],
+		priorityCounts[4],
+		priorityCounts[5],
+		len(doctors),
+		countUniqueSpecializations(doctors),
+		len(medicines),
+		countUniqueCategories(medicines),
+	)
+
+	return container.NewVScroll(container.NewVBox(
+		widget.NewLabelWithStyle("📊 Ringkasan Statistik", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabel(statsText),
+		widget.NewSeparator(),
+		widget.NewLabel("Statistik Lainnya:"),
+		widget.NewLabel("- Rata-rata umur pasien: "+calculateAverageAge(patients)),
+		widget.NewLabel("- Total stok obat: "+calculateTotalStock(medicines)),
+	))
+}
+
+func createDoctorTab(doctors []Dokter) fyne.CanvasObject {
+	if len(doctors) == 0 {
+		return container.NewCenter(widget.NewLabel("Belum ada dokter terdaftar"))
+	}
+
+	table := widget.NewTable(
+		func() (int, int) { return len(doctors) + 1, 4 },
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewLabel(""))
+		},
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
+
+			if id.Row == 0 { // Header
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				switch id.Col {
+				case 0:
+					label.SetText("ID")
+				case 1:
+					label.SetText("Nama Dokter")
+				case 2:
+					label.SetText("Spesialisasi")
+				case 3:
+					label.SetText("Jadwal Praktek")
+				}
+				return
+			}
+
+			doctor := doctors[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(doctor.ID)
+			case 1:
+				label.SetText(doctor.Nama)
+			case 2:
+				label.SetText(doctor.Spesialisasi)
+			case 3:
+				label.SetText(doctor.Jadwal)
+			}
+		},
+	)
+
+	table.SetColumnWidth(0, 100)
+	table.SetColumnWidth(1, 250)
+	table.SetColumnWidth(2, 200)
+	table.SetColumnWidth(3, 350)
+
+	return container.NewMax(table)
+}
+
+func createMedicineTab(medicines []Obat) fyne.CanvasObject {
+	if len(medicines) == 0 {
+		return container.NewCenter(widget.NewLabel("Belum ada obat terdaftar"))
+	}
+
+	table := widget.NewTable(
+		func() (int, int) { return len(medicines) + 1, 5 },
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewLabel(""))
+		},
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
+
+			if id.Row == 0 {
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				switch id.Col {
+				case 0:
+					label.SetText("Kode")
+				case 1:
+					label.SetText("Nama Obat")
+				case 2:
+					label.SetText("Stok")
+				case 3:
+					label.SetText("Harga")
+				case 4:
+					label.SetText("Kategori")
+				}
+				return
+			}
+
+			med := medicines[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(med.Kode)
+			case 1:
+				label.SetText(med.Nama)
+			case 2:
+				label.SetText(strconv.Itoa(med.Stok))
+			case 3:
+				label.SetText(fmt.Sprintf("Rp%.2f", med.Harga))
+			case 4:
+				label.SetText(med.Kategori)
+			}
+		},
+	)
+
+	table.SetColumnWidth(0, 100)
+	table.SetColumnWidth(1, 250)
+	table.SetColumnWidth(2, 80)
+	table.SetColumnWidth(3, 150)
+	table.SetColumnWidth(4, 200)
+
+	return container.NewMax(table)
+}
+
+func createPatientTab(patients []Pasien) fyne.CanvasObject {
+	if len(patients) == 0 {
+		return container.NewCenter(widget.NewLabel("Belum ada pasien terdaftar"))
+	}
+
+	table := widget.NewTable(
+		func() (int, int) { return len(patients) + 1, 5 },
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewLabel(""))
+		},
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
+
+			if id.Row == 0 {
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				switch id.Col {
+				case 0:
+					label.SetText("ID")
+				case 1:
+					label.SetText("Nama Pasien")
+				case 2:
+					label.SetText("Umur")
+				case 3:
+					label.SetText("Diagnosis")
+				case 4:
+					label.SetText("Prioritas")
+				}
+				return
+			}
+
+			patient := patients[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(patient.ID)
+			case 1:
+				label.SetText(patient.Nama)
+			case 2:
+				label.SetText(strconv.Itoa(patient.Umur))
+			case 3:
+				label.SetText(patient.Diagnosis)
+			case 4:
+				label.SetText(strconv.Itoa(patient.Prioritas))
+			}
+		},
+	)
+
+	table.SetColumnWidth(0, 100)
+	table.SetColumnWidth(1, 250)
+	table.SetColumnWidth(2, 80)
+	table.SetColumnWidth(3, 300)
+	table.SetColumnWidth(4, 100)
+
+	return container.NewMax(table)
+}
+
+// Helper functions
+func createSummaryRow(patients, doctors, medicines int) *fyne.Container {
+	return container.NewGridWithColumns(3,
+		createSummaryCard("👥 Pasien", strconv.Itoa(patients)),
+		createSummaryCard("👨‍⚕️ Dokter", strconv.Itoa(doctors)),
+		createSummaryCard("💊 Obat", strconv.Itoa(medicines)),
+	)
+}
+
+func createSummaryCard(title, value string) *fyne.Container {
+	return container.NewVBox(
+		widget.NewLabelWithStyle(title, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle(value, fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Monospace: true}),
+	)
+}
+
+func countUniqueSpecializations(doctors []Dokter) int {
+	unique := make(map[string]bool)
+	for _, d := range doctors {
+		unique[d.Spesialisasi] = true
+	}
+	return len(unique)
+}
+
+func countUniqueCategories(medicines []Obat) int {
+	unique := make(map[string]bool)
+	for _, m := range medicines {
+		unique[m.Kategori] = true
+	}
+	return len(unique)
+}
+
+func calculateAverageAge(patients []Pasien) string {
+	if len(patients) == 0 {
+		return "-"
+	}
+	total := 0
+	for _, p := range patients {
+		total += p.Umur
+	}
+	return fmt.Sprintf("%.1f tahun", float64(total)/float64(len(patients)))
+}
+
+func calculateTotalStock(medicines []Obat) string {
+	total := 0
+	for _, m := range medicines {
+		total += m.Stok
+	}
+	return strconv.Itoa(total)
 }
 
 // FUNGSI INI DIPINDAHKAN KE PALING BAWAH
