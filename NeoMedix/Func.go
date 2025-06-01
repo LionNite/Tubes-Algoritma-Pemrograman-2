@@ -46,27 +46,8 @@ var daftarObat = []Obat{
 
 var daftarPasien []Pasien
 
-// CRUD Pasien
 func TambahPasien(p Pasien) {
 	daftarPasien = append(daftarPasien, p)
-}
-
-func UpdatePasien(p Pasien) {
-	for i, pasien := range daftarPasien {
-		if pasien.ID == p.ID {
-			daftarPasien[i] = p
-			break
-		}
-	}
-}
-
-func HapusPasien(id string) {
-	for i, pasien := range daftarPasien {
-		if pasien.ID == id {
-			daftarPasien = append(daftarPasien[:i], daftarPasien[i+1:]...)
-			break
-		}
-	}
 }
 
 func GetPasienTerurutPrioritas() []Pasien {
@@ -83,29 +64,6 @@ func GetPasienTerurutPrioritas() []Pasien {
 	return patients
 }
 
-// CRUD Obat
-func TambahObat(o Obat) {
-	daftarObat = append(daftarObat, o)
-}
-
-func UpdateObat(o Obat) {
-	for i, obat := range daftarObat {
-		if obat.Kode == o.Kode {
-			daftarObat[i] = o
-			break
-		}
-	}
-}
-
-func HapusObat(kode string) {
-	for i, obat := range daftarObat {
-		if obat.Kode == kode {
-			daftarObat = append(daftarObat[:i], daftarObat[i+1:]...)
-			break
-		}
-	}
-}
-
 func GetObatTerurutHarga() []Obat {
 	medicines := make([]Obat, len(daftarObat))
 	copy(medicines, daftarObat)
@@ -120,29 +78,6 @@ func GetObatTerurutHarga() []Obat {
 		medicines[i], medicines[min] = medicines[min], medicines[i]
 	}
 	return medicines
-}
-
-// CRUD Dokter
-func TambahDokter(d Dokter) {
-	daftarDokter = append(daftarDokter, d)
-}
-
-func UpdateDokter(d Dokter) {
-	for i, dokter := range daftarDokter {
-		if dokter.ID == d.ID {
-			daftarDokter[i] = d
-			break
-		}
-	}
-}
-
-func HapusDokter(id string) {
-	for i, dokter := range daftarDokter {
-		if dokter.ID == id {
-			daftarDokter = append(daftarDokter[:i], daftarDokter[i+1:]...)
-			break
-		}
-	}
 }
 
 func GetDokterTerurutNama() []Dokter {
