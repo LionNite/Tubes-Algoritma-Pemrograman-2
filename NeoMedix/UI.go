@@ -64,7 +64,7 @@ func showAddPatientForm() {
 				Prioritas: priority,
 			})
 			dialog.ShowInformation("Sukses", "Pasien berhasil ditambahkan!", myWindow)
-			showMainMenu()
+			showPatientManagement()
 		},
 		OnCancel: func() {
 			showMainMenu()
@@ -79,6 +79,143 @@ func showAddPatientForm() {
 	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
 }
 
+func showPatientManagement() {
+	patients := GetPasienTerurutPrioritas()
+
+	list := widget.NewList(
+		func() int { return len(patients) },
+		func() fyne.CanvasObject {
+			return container.NewHBox(
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewButton("Edit", nil),
+				widget.NewButton("Hapus", nil),
+			)
+		},
+		func(i widget.ListItemID, item fyne.CanvasObject) {
+			c := item.(*fyne.Container)
+			c.Objects[0].(*widget.Label).SetText(patients[i].ID)
+			c.Objects[1].(*widget.Label).SetText(patients[i].Nama)
+			c.Objects[2].(*widget.Label).SetText(strconv.Itoa(patients[i].Umur))
+			c.Objects[3].(*widget.Label).SetText(patients[i].Diagnosis)
+			c.Objects[4].(*widget.Label).SetText(strconv.Itoa(patients[i].Prioritas))
+
+			// Update button actions
+			editBtn := c.Objects[5].(*widget.Button)
+			editBtn.OnTapped = func() {
+				showEditPatientForm(patients[i])
+			}
+
+			deleteBtn := c.Objects[6].(*widget.Button)
+			deleteBtn.OnTapped = func() {
+				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
+					if b {
+						HapusPasien(patients[i].ID)
+						showPatientManagement()
+					}
+				}, myWindow)
+				confirm.Show()
+			}
+		},
+	)
+
+	header := container.NewGridWithColumns(5,
+		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Umur", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Diagnosis", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Prioritas", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+	)
+
+	content := container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle("Manajemen Pasien", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Tambah Pasien Baru", func() { showAddPatientForm() }),
+			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+			layout.NewSpacer(),
+		),
+		nil, nil,
+		list,
+	)
+
+	myWindow.SetContent(content)
+}
+
+func showEditPatientForm(patient Pasien) {
+	idEntry := widget.NewEntry()
+	idEntry.SetText(patient.ID)
+	idEntry.Disable()
+
+	nameEntry := widget.NewEntry()
+	nameEntry.SetText(patient.Nama)
+
+	ageEntry := widget.NewEntry()
+	ageEntry.SetText(strconv.Itoa(patient.Umur))
+
+	diagnosisEntry := widget.NewEntry()
+	diagnosisEntry.SetText(patient.Diagnosis)
+
+	priorityEntry := widget.NewEntry()
+	priorityEntry.SetText(strconv.Itoa(patient.Prioritas))
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "ID", Widget: idEntry},
+			{Text: "Nama (harus huruf)", Widget: nameEntry},
+			{Text: "Umur", Widget: ageEntry},
+			{Text: "Diagnosis", Widget: diagnosisEntry},
+			{Text: "Prioritas (1-5)", Widget: priorityEntry},
+		},
+		OnSubmit: func() {
+			if !IsAlphaSpace(nameEntry.Text) {
+				dialog.ShowInformation("Error", "Nama harus berupa huruf", myWindow)
+				return
+			}
+			age, err := strconv.Atoi(ageEntry.Text)
+			if err != nil {
+				dialog.ShowInformation("Error", "Umur harus berupa angka", myWindow)
+				return
+			}
+			if strings.TrimSpace(diagnosisEntry.Text) == "" || !HasLetters(diagnosisEntry.Text) {
+				dialog.ShowInformation("Error", "Diagnosis harus mengandung huruf", myWindow)
+				return
+			}
+			priority, err := strconv.Atoi(priorityEntry.Text)
+			if err != nil || priority < 1 || priority > 5 {
+				dialog.ShowInformation("Error", "Prioritas harus angka antara 1-5", myWindow)
+				return
+			}
+
+			UpdatePasien(Pasien{
+				ID:        patient.ID,
+				Nama:      nameEntry.Text,
+				Umur:      age,
+				Diagnosis: diagnosisEntry.Text,
+				Prioritas: priority,
+			})
+			dialog.ShowInformation("Sukses", "Data pasien berhasil diperbarui!", myWindow)
+			showPatientManagement()
+		},
+		OnCancel: func() {
+			showPatientManagement()
+		},
+	}
+
+	content := container.NewVBox(
+		widget.NewLabelWithStyle("Edit Pasien", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		form,
+		widget.NewButton("Kembali", func() { showPatientManagement() }),
+	)
+	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
+}
 func showSortedPatients() {
 	patients := GetPasienTerurutPrioritas()
 
@@ -134,6 +271,211 @@ func showSortedPatients() {
 	myWindow.SetContent(content)
 }
 
+// Medicine Management
+func showMedicineManagement() {
+	medicines := GetObatTerurutHarga()
+
+	if len(medicines) == 0 {
+		dialog.ShowInformation("Info", "Belum ada obat terdaftar.", myWindow)
+		return
+	}
+
+	list := widget.NewList(
+		func() int { return len(medicines) },
+		func() fyne.CanvasObject {
+			return container.NewHBox(
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewButton("Edit", nil),
+				widget.NewButton("Hapus", nil),
+			)
+		},
+		func(i widget.ListItemID, item fyne.CanvasObject) {
+			c := item.(*fyne.Container)
+			c.Objects[0].(*widget.Label).SetText(medicines[i].Kode)
+			c.Objects[1].(*widget.Label).SetText(medicines[i].Nama)
+			c.Objects[2].(*widget.Label).SetText(strconv.Itoa(medicines[i].Stok))
+			c.Objects[3].(*widget.Label).SetText(fmt.Sprintf("Rp%.2f", medicines[i].Harga))
+			c.Objects[4].(*widget.Label).SetText(medicines[i].Kategori)
+
+			editBtn := c.Objects[5].(*widget.Button)
+			editBtn.OnTapped = func() {
+				showEditMedicineForm(medicines[i])
+			}
+
+			deleteBtn := c.Objects[6].(*widget.Button)
+			deleteBtn.OnTapped = func() {
+				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus obat ini?", func(b bool) {
+					if b {
+						HapusObat(medicines[i].Kode)
+						showMedicineManagement()
+					}
+				}, myWindow)
+				confirm.Show()
+			}
+		},
+	)
+
+	header := container.NewGridWithColumns(5,
+		widget.NewLabelWithStyle("Kode", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Stok", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Harga", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Kategori", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+	)
+
+	content := container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle("Manajemen Obat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Tambah Obat Baru", func() { showAddMedicineForm() }),
+			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+			layout.NewSpacer(),
+		),
+		nil, nil,
+		list,
+	)
+
+	myWindow.SetContent(content)
+}
+
+func showAddMedicineForm() {
+	codeEntry := widget.NewEntry()
+	nameEntry := widget.NewEntry()
+	stockEntry := widget.NewEntry()
+	priceEntry := widget.NewEntry()
+	categoryEntry := widget.NewEntry()
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "Kode Obat", Widget: codeEntry},
+			{Text: "Nama Obat", Widget: nameEntry},
+			{Text: "Stok", Widget: stockEntry},
+			{Text: "Harga", Widget: priceEntry},
+			{Text: "Kategori", Widget: categoryEntry},
+		},
+		OnSubmit: func() {
+			if codeEntry.Text == "" {
+				dialog.ShowInformation("Error", "Kode Obat tidak boleh kosong", myWindow)
+				return
+			}
+			if nameEntry.Text == "" {
+				dialog.ShowInformation("Error", "Nama Obat tidak boleh kosong", myWindow)
+				return
+			}
+			stock, err := strconv.Atoi(stockEntry.Text)
+			if err != nil {
+				dialog.ShowInformation("Error", "Stok harus berupa angka", myWindow)
+				return
+			}
+			price, err := strconv.ParseFloat(priceEntry.Text, 64)
+			if err != nil {
+				dialog.ShowInformation("Error", "Harga harus berupa angka", myWindow)
+				return
+			}
+			if categoryEntry.Text == "" {
+				dialog.ShowInformation("Error", "Kategori tidak boleh kosong", myWindow)
+				return
+			}
+
+			TambahObat(Obat{
+				Kode:     codeEntry.Text,
+				Nama:     nameEntry.Text,
+				Stok:     stock,
+				Harga:    price,
+				Kategori: categoryEntry.Text,
+			})
+			dialog.ShowInformation("Sukses", "Obat berhasil ditambahkan!", myWindow)
+			showMedicineManagement()
+		},
+		OnCancel: func() {
+			showMedicineManagement()
+		},
+	}
+
+	content := container.NewVBox(
+		widget.NewLabelWithStyle("Tambah Obat Baru", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		form,
+		widget.NewButton("Kembali", func() { showMedicineManagement() }),
+	)
+	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
+}
+
+func showEditMedicineForm(medicine Obat) {
+	codeEntry := widget.NewEntry()
+	codeEntry.SetText(medicine.Kode)
+	codeEntry.Disable()
+
+	nameEntry := widget.NewEntry()
+	nameEntry.SetText(medicine.Nama)
+
+	stockEntry := widget.NewEntry()
+	stockEntry.SetText(strconv.Itoa(medicine.Stok))
+
+	priceEntry := widget.NewEntry()
+	priceEntry.SetText(fmt.Sprintf("%.2f", medicine.Harga))
+
+	categoryEntry := widget.NewEntry()
+	categoryEntry.SetText(medicine.Kategori)
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "Kode Obat", Widget: codeEntry},
+			{Text: "Nama Obat", Widget: nameEntry},
+			{Text: "Stok", Widget: stockEntry},
+			{Text: "Harga", Widget: priceEntry},
+			{Text: "Kategori", Widget: categoryEntry},
+		},
+		OnSubmit: func() {
+			if nameEntry.Text == "" {
+				dialog.ShowInformation("Error", "Nama Obat tidak boleh kosong", myWindow)
+				return
+			}
+			stock, err := strconv.Atoi(stockEntry.Text)
+			if err != nil {
+				dialog.ShowInformation("Error", "Stok harus berupa angka", myWindow)
+				return
+			}
+			price, err := strconv.ParseFloat(priceEntry.Text, 64)
+			if err != nil {
+				dialog.ShowInformation("Error", "Harga harus berupa angka", myWindow)
+				return
+			}
+			if categoryEntry.Text == "" {
+				dialog.ShowInformation("Error", "Kategori tidak boleh kosong", myWindow)
+				return
+			}
+
+			UpdateObat(Obat{
+				Kode:     medicine.Kode,
+				Nama:     nameEntry.Text,
+				Stok:     stock,
+				Harga:    price,
+				Kategori: categoryEntry.Text,
+			})
+			dialog.ShowInformation("Sukses", "Data obat berhasil diperbarui!", myWindow)
+			showMedicineManagement()
+		},
+		OnCancel: func() {
+			showMedicineManagement()
+		},
+	}
+
+	content := container.NewVBox(
+		widget.NewLabelWithStyle("Edit Obat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		form,
+		widget.NewButton("Kembali", func() { showMedicineManagement() }),
+	)
+	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
+}
+
 func showSortedMedicines() {
 	medicines := GetObatTerurutHarga()
 
@@ -173,6 +515,188 @@ func showSortedMedicines() {
 	)
 
 	myWindow.SetContent(content)
+}
+
+// Doctor Management
+func showDoctorManagement() {
+	doctors := GetDokterTerurutNama()
+
+	if len(doctors) == 0 {
+		dialog.ShowInformation("Info", "Belum ada dokter terdaftar.", myWindow)
+		return
+	}
+
+	list := widget.NewList(
+		func() int { return len(doctors) },
+		func() fyne.CanvasObject {
+			return container.NewHBox(
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewLabel(""),
+				widget.NewButton("Edit", nil),
+				widget.NewButton("Hapus", nil),
+			)
+		},
+		func(i widget.ListItemID, item fyne.CanvasObject) {
+			c := item.(*fyne.Container)
+			c.Objects[0].(*widget.Label).SetText(doctors[i].ID)
+			c.Objects[1].(*widget.Label).SetText(doctors[i].Nama)
+			c.Objects[2].(*widget.Label).SetText(doctors[i].Spesialisasi)
+			c.Objects[3].(*widget.Label).SetText(doctors[i].Jadwal)
+
+			editBtn := c.Objects[4].(*widget.Button)
+			editBtn.OnTapped = func() {
+				showEditDoctorForm(doctors[i])
+			}
+
+			deleteBtn := c.Objects[5].(*widget.Button)
+			deleteBtn.OnTapped = func() {
+				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus dokter ini?", func(b bool) {
+					if b {
+						HapusDokter(doctors[i].ID)
+						showDoctorManagement()
+					}
+				}, myWindow)
+				confirm.Show()
+			}
+		},
+	)
+
+	header := container.NewGridWithColumns(4,
+		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Spesialisasi", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Jadwal", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+	)
+
+	content := container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle("Manajemen Dokter", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			header,
+			widget.NewSeparator(),
+		),
+		container.NewHBox(
+			layout.NewSpacer(),
+			widget.NewButton("Tambah Dokter Baru", func() { showAddDoctorForm() }),
+			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
+			layout.NewSpacer(),
+		),
+		nil, nil,
+		list,
+	)
+
+	myWindow.SetContent(content)
+}
+
+func showAddDoctorForm() {
+	idEntry := widget.NewEntry()
+	nameEntry := widget.NewEntry()
+	specializationEntry := widget.NewEntry()
+	scheduleEntry := widget.NewEntry()
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "ID Dokter", Widget: idEntry},
+			{Text: "Nama Dokter", Widget: nameEntry},
+			{Text: "Spesialisasi", Widget: specializationEntry},
+			{Text: "Jadwal Praktek", Widget: scheduleEntry},
+		},
+		OnSubmit: func() {
+			if idEntry.Text == "" {
+				dialog.ShowInformation("Error", "ID Dokter tidak boleh kosong", myWindow)
+				return
+			}
+			if nameEntry.Text == "" {
+				dialog.ShowInformation("Error", "Nama Dokter tidak boleh kosong", myWindow)
+				return
+			}
+			if specializationEntry.Text == "" {
+				dialog.ShowInformation("Error", "Spesialisasi tidak boleh kosong", myWindow)
+				return
+			}
+			if scheduleEntry.Text == "" {
+				dialog.ShowInformation("Error", "Jadwal Praktek tidak boleh kosong", myWindow)
+				return
+			}
+
+			TambahDokter(Dokter{
+				ID:           idEntry.Text,
+				Nama:         nameEntry.Text,
+				Spesialisasi: specializationEntry.Text,
+				Jadwal:       scheduleEntry.Text,
+			})
+			dialog.ShowInformation("Sukses", "Dokter berhasil ditambahkan!", myWindow)
+			showDoctorManagement()
+		},
+		OnCancel: func() {
+			showDoctorManagement()
+		},
+	}
+
+	content := container.NewVBox(
+		widget.NewLabelWithStyle("Tambah Dokter Baru", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		form,
+		widget.NewButton("Kembali", func() { showDoctorManagement() }),
+	)
+	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
+}
+
+func showEditDoctorForm(doctor Dokter) {
+	idEntry := widget.NewEntry()
+	idEntry.SetText(doctor.ID)
+	idEntry.Disable()
+
+	nameEntry := widget.NewEntry()
+	nameEntry.SetText(doctor.Nama)
+
+	specializationEntry := widget.NewEntry()
+	specializationEntry.SetText(doctor.Spesialisasi)
+
+	scheduleEntry := widget.NewEntry()
+	scheduleEntry.SetText(doctor.Jadwal)
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "ID Dokter", Widget: idEntry},
+			{Text: "Nama Dokter", Widget: nameEntry},
+			{Text: "Spesialisasi", Widget: specializationEntry},
+			{Text: "Jadwal Praktek", Widget: scheduleEntry},
+		},
+		OnSubmit: func() {
+			if nameEntry.Text == "" {
+				dialog.ShowInformation("Error", "Nama Dokter tidak boleh kosong", myWindow)
+				return
+			}
+			if specializationEntry.Text == "" {
+				dialog.ShowInformation("Error", "Spesialisasi tidak boleh kosong", myWindow)
+				return
+			}
+			if scheduleEntry.Text == "" {
+				dialog.ShowInformation("Error", "Jadwal Praktek tidak boleh kosong", myWindow)
+				return
+			}
+
+			UpdateDokter(Dokter{
+				ID:           doctor.ID,
+				Nama:         nameEntry.Text,
+				Spesialisasi: specializationEntry.Text,
+				Jadwal:       scheduleEntry.Text,
+			})
+			dialog.ShowInformation("Sukses", "Data dokter berhasil diperbarui!", myWindow)
+			showDoctorManagement()
+		},
+		OnCancel: func() {
+			showDoctorManagement()
+		},
+	}
+
+	content := container.NewVBox(
+		widget.NewLabelWithStyle("Edit Dokter", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		form,
+		widget.NewButton("Kembali", func() { showDoctorManagement() }),
+	)
+	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
 }
 
 func showSortedDoctors() {
@@ -656,34 +1180,40 @@ func calculateTotalStock(medicines []Obat) string {
 func showMainMenu() {
 	title := widget.NewLabelWithStyle("Sistem Manajemen Kesehatan", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 
-	btn1 := widget.NewButton("Tambah Pasien", func() {
-		showAddPatientForm()
+	btn1 := widget.NewButton("Manajemen Pasien", func() {
+		showPatientManagement()
 	})
-	btn2 := widget.NewButton("Tampilkan Pasien Terurut Prioritas", func() {
+	btn2 := widget.NewButton("Manajemen Dokter", func() {
+		showDoctorManagement()
+	})
+	btn3 := widget.NewButton("Manajemen Obat", func() {
+		showMedicineManagement()
+	})
+	btn4 := widget.NewButton("Tampilkan Pasien Terurut Prioritas", func() {
 		showSortedPatients()
 	})
-	btn3 := widget.NewButton("Tampilkan Obat Terurut Harga", func() {
+	btn5 := widget.NewButton("Tampilkan Obat Terurut Harga", func() {
 		showSortedMedicines()
 	})
-	btn4 := widget.NewButton("Tampilkan Jadwal Dokter Terurut Nama", func() {
+	btn6 := widget.NewButton("Tampilkan Jadwal Dokter Terurut Nama", func() {
 		showSortedDoctors()
 	})
-	btn5 := widget.NewButton("Cari Obat Berdasarkan Kategori", func() {
+	btn7 := widget.NewButton("Cari Obat Berdasarkan Kategori", func() {
 		showMedicineSearch()
 	})
-	btn6 := widget.NewButton("Cari Dokter Berdasarkan Spesialisasi", func() {
+	btn8 := widget.NewButton("Cari Dokter Berdasarkan Spesialisasi", func() {
 		showDoctorSearch()
 	})
-	btn7 := widget.NewButton("Tampilkan Statistik", func() {
+	btn9 := widget.NewButton("Tampilkan Statistik", func() {
 		showStatistics()
 	})
-	btn8 := widget.NewButton("Keluar", func() {
+	btn10 := widget.NewButton("Keluar", func() {
 		myWindow.Close()
 	})
 
 	menuContainer := container.NewVBox(
 		title, layout.NewSpacer(),
-		btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8,
+		btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn10,
 		layout.NewSpacer(),
 	)
 
