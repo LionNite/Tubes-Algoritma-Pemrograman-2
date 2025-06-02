@@ -360,12 +360,12 @@ func showStatistics() {
 	doctors := GetDokterTerurutNama()
 	medicines := GetObatTerurutHarga()
 
-	// Create tabbed interface with all sections
+	// Create tabbed interface with custom icons
 	tabs := container.NewAppTabs(
-		container.NewTabItem("📊 Ringkasan", createSummaryTab(patients, doctors, medicines)),
-		container.NewTabItem("👨‍⚕️ Dokter", createDoctorTab(doctors)),
-		container.NewTabItem("💊 Obat", createMedicineTab(medicines)),
-		container.NewTabItem("👥 Pasien", createPatientTab(patients)),
+		container.NewTabItemWithIcon("Ringkasan", iconStatistik, createSummaryTab(patients, doctors, medicines)),
+		container.NewTabItemWithIcon("Dokter", iconDokter, createDoctorTab(doctors)),
+		container.NewTabItemWithIcon("Obat", iconObat, createMedicineTab(medicines)),
+		container.NewTabItemWithIcon("Pasien", iconPasien, createPatientTab(patients)),
 	)
 	tabs.SetTabLocation(container.TabLocationTop)
 
@@ -385,7 +385,7 @@ func showStatistics() {
 	)
 
 	myWindow.SetContent(mainContainer)
-	myWindow.Resize(fyne.NewSize(1200, 800)) // Wider window for better data display
+	myWindow.Resize(fyne.NewSize(1200, 800))
 }
 
 func createSummaryTab(patients []Pasien, doctors []Dokter, medicines []Obat) fyne.CanvasObject {

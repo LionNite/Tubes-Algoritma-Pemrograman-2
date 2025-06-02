@@ -1,3 +1,4 @@
+// Run.go
 package main
 
 import (
@@ -5,10 +6,24 @@ import (
 	"fyne.io/fyne/v2/app"
 )
 
+var (
+	// Tambahkan variabel untuk ikon custom
+	iconStatistik = resourceStatistikPng
+	iconDokter    = resourceDokterPng
+	iconObat      = resourceObatPng
+	iconPasien    = resourcePasienPng
+)
+
 func main() {
 	myApp = app.New()
 	myWindow = myApp.NewWindow("NeoMedix")
 	myWindow.Resize(fyne.NewSize(800, 600))
+
+	// Load ikon custom
+	iconStatistik = resourceStatistikPng
+	iconDokter = resourceDokterPng
+	iconObat = resourceObatPng
+	iconPasien = resourcePasienPng
 
 	showMainMenu()
 	myWindow.ShowAndRun()
