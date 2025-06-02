@@ -2,7 +2,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 	"unicode"
@@ -46,6 +48,22 @@ var daftarObat = []Obat{
 
 var daftarPasien []Pasien
 
+func SimpanPasienKeFile(filename string) error {
+	data, err := json.MarshalIndent(daftarPasien, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+// Load pasien dari file JSON
+func MuatPasienDariFile(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &daftarPasien)
+}
 func TambahPasien(p Pasien) {
 	daftarPasien = append(daftarPasien, p)
 }

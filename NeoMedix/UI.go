@@ -79,6 +79,7 @@ func showAddPatientForm() {
 				Diagnosis: diagnosisEntry.Text,
 				Prioritas: priority,
 			})
+			_ = SimpanPasienKeFile("data_pasien.json")
 			dialog.ShowInformation("Sukses", "Pasien berhasil ditambahkan!", myWindow)
 			showMainMenu()
 		},
