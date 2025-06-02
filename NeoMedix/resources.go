@@ -7,12 +7,11 @@ import (
 )
 
 var assets embed.FS
-
+var _ fyne.Resource = (*fyne.StaticResource)(nil)
 var (
-	resourceStatistikPng = mustLoadResource("Aset/statistik.png")
-	resourceDokterPng    = mustLoadResource("Aset/dokter.png")
-	resourceObatPng      = mustLoadResource("Aset/obat.png")
-	resourcePasienPng    = mustLoadResource("Aset/pasien.png")
+	resourceDokterPng = mustLoadResource("Aset/dokter.png")
+	resourceObatPng   = mustLoadResource("Aset/obat.png")
+	resourcePasienPng = mustLoadResource("Aset/pasien.png")
 )
 
 func mustLoadResource(path string) *fyne.StaticResource {

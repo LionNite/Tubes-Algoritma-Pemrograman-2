@@ -376,7 +376,7 @@ func showStatistics() {
 	doctors := GetDokterTerurutNama()
 	medicines := GetObatTerurutHarga()
 
-	// Create tabbed interface with custom icons
+	// Tab-tabulasi data
 	tabs := container.NewAppTabs(
 		container.NewTabItemWithIcon("Ringkasan", iconStatistik, createSummaryTab(patients, doctors, medicines)),
 		container.NewTabItemWithIcon("Dokter", iconDokter, createDoctorTab(doctors)),
@@ -385,23 +385,20 @@ func showStatistics() {
 	)
 	tabs.SetTabLocation(container.TabLocationTop)
 
-	// Main container with border layout
+	// Layout utama
 	mainContainer := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle("STATISTIK LENGKAP SISTEM", fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Monospace: true}),
 			createSummaryRow(len(patients), len(doctors), len(medicines)),
 			widget.NewSeparator(),
 		),
-		container.NewCenter(
-			widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() }),
-		),
-		nil,
-		nil,
+		container.NewCenter(widget.NewButton("Kembali ke Menu Utama", func() { showMainMenu() })),
+		nil, nil,
 		tabs,
 	)
 
 	myWindow.SetContent(mainContainer)
-	myWindow.Resize(fyne.NewSize(1200, 800))
+	myWindow.Canvas().Refresh(myWindow.Content()) // Sinkronisasi tampilan
 }
 
 func createSummaryTab(patients []Pasien, doctors []Dokter, medicines []Obat) fyne.CanvasObject {
