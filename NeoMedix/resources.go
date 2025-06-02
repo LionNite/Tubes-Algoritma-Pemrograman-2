@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2"
 )
 
-//go:embed Aset/*
 var assets embed.FS
 
 var (

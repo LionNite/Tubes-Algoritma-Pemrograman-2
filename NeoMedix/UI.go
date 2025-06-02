@@ -1,4 +1,3 @@
-// ui.go
 package main
 
 import (
@@ -13,9 +12,26 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// UI global variables
 var myApp fyne.App
 var myWindow fyne.Window
+
+func showFullscreenPrompt() {
+	fullscreenButton := widget.NewButton("Fullscreen untuk mulai", func() {
+		showMainMenu()
+	})
+
+	content := container.NewCenter(
+		container.NewVBox(
+			widget.NewLabelWithStyle("Selamat Datang di Sistem Manajemen Kesehatan", fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Italic: true}),
+			layout.NewSpacer(),
+			widget.NewLabelWithStyle("Untuk pengalaman terbaik, silakan aktifkan mode Fullscreen.", fyne.TextAlignCenter, fyne.TextStyle{}),
+			layout.NewSpacer(),
+			fullscreenButton,
+		),
+	)
+	myWindow.SetContent(content)
+	myWindow.SetFullScreen(true)
+}
 
 func showAddPatientForm() {
 	idEntry := widget.NewEntry()
