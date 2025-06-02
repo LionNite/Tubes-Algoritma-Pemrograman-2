@@ -1,0 +1,16 @@
+[
+  {
+    "ID": "100",
+    "Nama": "Abiyyu",
+    "Umur": 19,
+    "Diagnosis": "Demam",
+    "Prioritas": 3
+  },
+  {
+    "ID": "1001",
+    "Nama": "Galang",
+    "Umur": 19,
+    "Diagnosis": "Flu",
+    "Prioritas": 3
+  }
+]
