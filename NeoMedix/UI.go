@@ -928,7 +928,6 @@ func showStatistics() {
 	)
 
 	myWindow.SetContent(mainContainer)
-	myWindow.Resize(fyne.NewSize(1200, 800))
 }
 
 func createSummaryTab(patients []Pasien, doctors []Dokter, medicines []Obat) fyne.CanvasObject {
