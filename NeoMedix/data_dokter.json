@@ -8,7 +8,7 @@
   {
     "ID": "D002",
     "Nama": "Dr. Siti",
-    "Spesialisasi": "Kardio",
+    "Spesialisasi": "Kardiologi",
     "Jadwal": "Selasa-Kamis 09:00-17:00"
   },
   {
@@ -22,5 +22,41 @@
     "Nama": "Dr. Zaek",
     "Spesialisasi": "Kulit",
     "Jadwal": "Senin-Sabtu 10:00-18:00"
+  },
+  {
+    "ID": "D005",
+    "Nama": "Dr. Lina",
+    "Spesialisasi": "Paru",
+    "Jadwal": "Senin-Rabu 08:00-14:00"
+  },
+  {
+    "ID": "D006",
+    "Nama": "Dr. Dimas",
+    "Spesialisasi": "Ortopedi",
+    "Jadwal": "Kamis-Jumat 09:00-16:00"
+  },
+  {
+    "ID": "D007",
+    "Nama": "Dr. Maya",
+    "Spesialisasi": "Infeksi",
+    "Jadwal": "Selasa-Kamis 10:00-17:00"
+  },
+  {
+    "ID": "D008",
+    "Nama": "Dr. Andri",
+    "Spesialisasi": "PenyakitDalam",
+    "Jadwal": "Rabu-Jumat 09:00-15:00"
+  },
+  {
+    "ID": "D009",
+    "Nama": "Dr. Reni",
+    "Spesialisasi": "Endokrin",
+    "Jadwal": "Senin-Kamis 08:00-13:00"
+  },
+  {
+    "ID": "D010",
+    "Nama": "Dr. Farhan",
+    "Spesialisasi": "Gastroenterologi",
+    "Jadwal": "Selasa-Jumat 10:00-18:00"
   }
 ]

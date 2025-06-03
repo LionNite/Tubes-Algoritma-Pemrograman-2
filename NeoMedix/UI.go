@@ -148,11 +148,13 @@ func showPatientManagement() {
 			case 4:
 				label.SetText(strconv.Itoa(patient.Prioritas))
 			case 5:
-				box.Objects[0] = widget.NewButton("Edit", func() {
+				box.Objects = box.Objects[:0]
+				box.Add(widget.NewButton("Edit", func() {
 					showEditPatientForm(patient)
-				})
+				}))
 			case 6:
-				box.Objects[0] = widget.NewButton("Hapus", func() {
+				box.Objects = box.Objects[:0]
+				box.Add(widget.NewButton("Hapus", func() {
 					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
 						if b {
 							HapusPasien(patient.ID)
@@ -160,7 +162,7 @@ func showPatientManagement() {
 						}
 					}, myWindow)
 					confirm.Show()
-				})
+				}))
 			}
 		},
 	)
@@ -364,19 +366,21 @@ func showMedicineManagement() {
 			case 4:
 				label.SetText(medicine.Kategori)
 			case 5:
-				box.Objects[0] = widget.NewButton("Edit", func() {
+				box.Objects = box.Objects[:0]
+				box.Add(widget.NewButton("Edit", func() {
 					showEditMedicineForm(medicine)
-				})
+				}))
 			case 6:
-				box.Objects[0] = widget.NewButton("Hapus", func() {
-					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus obat ini?", func(b bool) {
+				box.Objects = box.Objects[:0]
+				box.Add(widget.NewButton("Hapus", func() {
+					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
 						if b {
 							HapusObat(medicine.Kode)
 							showMedicineManagement()
 						}
 					}, myWindow)
 					confirm.Show()
-				})
+				}))
 			}
 		},
 	)
@@ -625,19 +629,21 @@ func showDoctorManagement() {
 			case 3:
 				label.SetText(doctor.Jadwal)
 			case 4:
-				box.Objects[0] = widget.NewButton("Edit", func() {
+				box.Objects = box.Objects[:0] // hapus isi
+				box.Add(widget.NewButton("Edit", func() {
 					showEditDoctorForm(doctor)
-				})
+				}))
 			case 5:
-				box.Objects[0] = widget.NewButton("Hapus", func() {
-					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus dokter ini?", func(b bool) {
+				box.Objects = box.Objects[:0]
+				box.Add(widget.NewButton("Hapus", func() {
+					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
 						if b {
 							HapusDokter(doctor.ID)
 							showDoctorManagement()
 						}
 					}, myWindow)
 					confirm.Show()
-				})
+				}))
 			}
 		},
 	)

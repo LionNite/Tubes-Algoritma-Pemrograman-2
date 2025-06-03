@@ -2,22 +2,71 @@
   {
     "Kode": "OBT001",
     "Nama": "Paracetamol",
-    "Stok": 100,
+    "Stok": 120,
     "Harga": 5000,
-    "Kategori": "pereda_nyeri"
+    "Kategori": "analgesik"
   },
   {
     "Kode": "OBT002",
-    "Nama": "Amoxicillin",
-    "Stok": 50,
-    "Harga": 15000,
-    "Kategori": "antibiotik"
+    "Nama": "Ibuprofen",
+    "Stok": 100,
+    "Harga": 8000,
+    "Kategori": "antiinflamasi"
   },
   {
     "Kode": "OBT003",
-    "Nama": "Omeprazole",
-    "Stok": 75,
+    "Nama": "Salbutamol",
+    "Stok": 50,
+    "Harga": 15000,
+    "Kategori": "bronkodilator"
+  },
+  {
+    "Kode": "OBT004",
+    "Nama": "Oralit",
+    "Stok": 200,
+    "Harga": 3000,
+    "Kategori": "rehidrasi"
+  },
+  {
+    "Kode": "OBT005",
+    "Nama": "Amlodipine",
+    "Stok": 90,
+    "Harga": 10000,
+    "Kategori": "antihipertensi"
+  },
+  {
+    "Kode": "OBT006",
+    "Nama": "Ketoprofen",
+    "Stok": 60,
     "Harga": 12000,
-    "Kategori": "antasida"
+    "Kategori": "antiinflamasi"
+  },
+  {
+    "Kode": "OBT007",
+    "Nama": "Doxycycline",
+    "Stok": 70,
+    "Harga": 9000,
+    "Kategori": "antibiotik"
+  },
+  {
+    "Kode": "OBT008",
+    "Nama": "ParacetamolGel",
+    "Stok": 40,
+    "Harga": 6000,
+    "Kategori": "topikal"
+  },
+  {
+    "Kode": "OBT009",
+    "Nama": "CalciumCarbonate",
+    "Stok": 50,
+    "Harga": 7000,
+    "Kategori": "suplementasi"
+  },
+  {
+    "Kode": "OBT010",
+    "Nama": "Clindamycin",
+    "Stok": 35,
+    "Harga": 13000,
+    "Kategori": "antibiotik"
   }
 ]
