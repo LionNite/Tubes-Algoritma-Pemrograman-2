@@ -12,5 +12,12 @@
     "Umur": 19,
     "Diagnosis": "Flu",
     "Prioritas": 3
+  },
+  {
+    "ID": "1002",
+    "Nama": "Eras",
+    "Umur": 12,
+    "Diagnosis": "Sakit",
+    "Prioritas": 2
   }
 ]

@@ -17,6 +17,24 @@ import (
 var myApp fyne.App
 var myWindow fyne.Window
 
+func showFullscreenPrompt() {
+	fullscreenButton := widget.NewButton("Fullscreen untuk mulai", func() {
+		showMainMenu()
+	})
+
+	content := container.NewCenter(
+		container.NewVBox(
+			widget.NewLabelWithStyle("Selamat Datang di Sistem Manajemen Kesehatan", fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Italic: true}),
+			layout.NewSpacer(),
+			widget.NewLabelWithStyle("Untuk pengalaman terbaik, silakan aktifkan mode Fullscreen.", fyne.TextAlignCenter, fyne.TextStyle{}),
+			layout.NewSpacer(),
+			fullscreenButton,
+		),
+	)
+	myWindow.SetContent(content)
+	myWindow.SetFullScreen(true)
+}
+
 func showAddPatientForm() {
 	idEntry := widget.NewEntry()
 	nameEntry := widget.NewEntry()
@@ -63,6 +81,7 @@ func showAddPatientForm() {
 				Diagnosis: diagnosisEntry.Text,
 				Prioritas: priority,
 			})
+			_ = SimpanPasienKeFile("data_pasien.json")
 			dialog.ShowInformation("Sukses", "Pasien berhasil ditambahkan!", myWindow)
 			showPatientManagement()
 		},
