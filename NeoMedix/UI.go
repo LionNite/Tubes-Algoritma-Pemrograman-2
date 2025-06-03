@@ -101,59 +101,82 @@ func showAddPatientForm() {
 func showPatientManagement() {
 	patients := GetPasienTerurutPrioritas()
 
-	list := widget.NewList(
-		func() int { return len(patients) },
+	table := widget.NewTable(
+		func() (int, int) { return len(patients) + 1, 7 }, // +1 untuk header, 7 kolom (5 data + 2 aksi)
 		func() fyne.CanvasObject {
-			return container.NewHBox(
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewButton("Edit", nil),
-				widget.NewButton("Hapus", nil),
-			)
+			return container.NewHBox(widget.NewLabel(""))
 		},
-		func(i widget.ListItemID, item fyne.CanvasObject) {
-			c := item.(*fyne.Container)
-			c.Objects[0].(*widget.Label).SetText(patients[i].ID)
-			c.Objects[1].(*widget.Label).SetText(patients[i].Nama)
-			c.Objects[2].(*widget.Label).SetText(strconv.Itoa(patients[i].Umur))
-			c.Objects[3].(*widget.Label).SetText(patients[i].Diagnosis)
-			c.Objects[4].(*widget.Label).SetText(strconv.Itoa(patients[i].Prioritas))
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
 
-			// Update button actions
-			editBtn := c.Objects[5].(*widget.Button)
-			editBtn.OnTapped = func() {
-				showEditPatientForm(patients[i])
+			if id.Row == 0 { // Header
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				label.Alignment = fyne.TextAlignCenter
+				switch id.Col {
+				case 0:
+					label.SetText("ID")
+				case 1:
+					label.SetText("Nama")
+				case 2:
+					label.SetText("Umur")
+				case 3:
+					label.SetText("Diagnosis")
+				case 4:
+					label.SetText("Prioritas")
+				case 5:
+					label.SetText("Edit")
+				case 6:
+					label.SetText("Hapus")
+				}
+				return
 			}
 
-			deleteBtn := c.Objects[6].(*widget.Button)
-			deleteBtn.OnTapped = func() {
-				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
-					if b {
-						HapusPasien(patients[i].ID)
-						showPatientManagement()
-					}
-				}, myWindow)
-				confirm.Show()
+			patient := patients[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(patient.ID)
+			case 1:
+				label.SetText(patient.Nama)
+			case 2:
+				label.SetText(strconv.Itoa(patient.Umur))
+			case 3:
+				label.SetText(patient.Diagnosis)
+			case 4:
+				label.SetText(strconv.Itoa(patient.Prioritas))
+			case 5:
+				box.Objects[0] = widget.NewButton("Edit", func() {
+					showEditPatientForm(patient)
+				})
+			case 6:
+				box.Objects[0] = widget.NewButton("Hapus", func() {
+					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus pasien ini?", func(b bool) {
+						if b {
+							HapusPasien(patient.ID)
+							showPatientManagement()
+						}
+					}, myWindow)
+					confirm.Show()
+				})
 			}
 		},
 	)
 
-	header := container.NewGridWithColumns(5,
-		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Umur", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Diagnosis", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Prioritas", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-	)
+	// Set column widths
+	table.SetColumnWidth(0, 100) // ID
+	table.SetColumnWidth(1, 200) // Nama
+	table.SetColumnWidth(2, 80)  // Umur
+	table.SetColumnWidth(3, 250) // Diagnosis
+	table.SetColumnWidth(4, 100) // Prioritas
+	table.SetColumnWidth(5, 80)  // Edit
+	table.SetColumnWidth(6, 80)  // Hapus
 
 	content := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle("Manajemen Pasien", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-			header,
-			widget.NewSeparator(),
 		),
 		container.NewHBox(
 			layout.NewSpacer(),
@@ -162,7 +185,7 @@ func showPatientManagement() {
 			layout.NewSpacer(),
 		),
 		nil, nil,
-		list,
+		table,
 	)
 
 	myWindow.SetContent(content)
@@ -294,63 +317,82 @@ func showSortedPatients() {
 func showMedicineManagement() {
 	medicines := GetObatTerurutHarga()
 
-	if len(medicines) == 0 {
-		dialog.ShowInformation("Info", "Belum ada obat terdaftar.", myWindow)
-		return
-	}
-
-	list := widget.NewList(
-		func() int { return len(medicines) },
+	table := widget.NewTable(
+		func() (int, int) { return len(medicines) + 1, 7 }, // +1 untuk header, 7 kolom (5 data + 2 aksi)
 		func() fyne.CanvasObject {
-			return container.NewHBox(
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewButton("Edit", nil),
-				widget.NewButton("Hapus", nil),
-			)
+			return container.NewHBox(widget.NewLabel(""))
 		},
-		func(i widget.ListItemID, item fyne.CanvasObject) {
-			c := item.(*fyne.Container)
-			c.Objects[0].(*widget.Label).SetText(medicines[i].Kode)
-			c.Objects[1].(*widget.Label).SetText(medicines[i].Nama)
-			c.Objects[2].(*widget.Label).SetText(strconv.Itoa(medicines[i].Stok))
-			c.Objects[3].(*widget.Label).SetText(fmt.Sprintf("Rp%.2f", medicines[i].Harga))
-			c.Objects[4].(*widget.Label).SetText(medicines[i].Kategori)
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
 
-			editBtn := c.Objects[5].(*widget.Button)
-			editBtn.OnTapped = func() {
-				showEditMedicineForm(medicines[i])
+			if id.Row == 0 { // Header
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				label.Alignment = fyne.TextAlignCenter
+				switch id.Col {
+				case 0:
+					label.SetText("Kode")
+				case 1:
+					label.SetText("Nama")
+				case 2:
+					label.SetText("Stok")
+				case 3:
+					label.SetText("Harga")
+				case 4:
+					label.SetText("Kategori")
+				case 5:
+					label.SetText("Edit")
+				case 6:
+					label.SetText("Hapus")
+				}
+				return
 			}
 
-			deleteBtn := c.Objects[6].(*widget.Button)
-			deleteBtn.OnTapped = func() {
-				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus obat ini?", func(b bool) {
-					if b {
-						HapusObat(medicines[i].Kode)
-						showMedicineManagement()
-					}
-				}, myWindow)
-				confirm.Show()
+			medicine := medicines[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(medicine.Kode)
+			case 1:
+				label.SetText(medicine.Nama)
+			case 2:
+				label.SetText(strconv.Itoa(medicine.Stok))
+			case 3:
+				label.SetText(fmt.Sprintf("Rp%.2f", medicine.Harga))
+			case 4:
+				label.SetText(medicine.Kategori)
+			case 5:
+				box.Objects[0] = widget.NewButton("Edit", func() {
+					showEditMedicineForm(medicine)
+				})
+			case 6:
+				box.Objects[0] = widget.NewButton("Hapus", func() {
+					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus obat ini?", func(b bool) {
+						if b {
+							HapusObat(medicine.Kode)
+							showMedicineManagement()
+						}
+					}, myWindow)
+					confirm.Show()
+				})
 			}
 		},
 	)
 
-	header := container.NewGridWithColumns(5,
-		widget.NewLabelWithStyle("Kode", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Stok", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Harga", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Kategori", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-	)
+	// Set column widths
+	table.SetColumnWidth(0, 100) // Kode
+	table.SetColumnWidth(1, 200) // Nama
+	table.SetColumnWidth(2, 80)  // Stok
+	table.SetColumnWidth(3, 120) // Harga
+	table.SetColumnWidth(4, 150) // Kategori
+	table.SetColumnWidth(5, 80)  // Edit
+	table.SetColumnWidth(6, 80)  // Hapus
 
 	content := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle("Manajemen Obat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-			header,
-			widget.NewSeparator(),
 		),
 		container.NewHBox(
 			layout.NewSpacer(),
@@ -359,7 +401,7 @@ func showMedicineManagement() {
 			layout.NewSpacer(),
 		),
 		nil, nil,
-		list,
+		table,
 	)
 
 	myWindow.SetContent(content)
@@ -540,60 +582,77 @@ func showSortedMedicines() {
 func showDoctorManagement() {
 	doctors := GetDokterTerurutNama()
 
-	if len(doctors) == 0 {
-		dialog.ShowInformation("Info", "Belum ada dokter terdaftar.", myWindow)
-		return
-	}
-
-	list := widget.NewList(
-		func() int { return len(doctors) },
+	table := widget.NewTable(
+		func() (int, int) { return len(doctors) + 1, 6 }, // +1 untuk header, 6 kolom (4 data + 2 aksi)
 		func() fyne.CanvasObject {
-			return container.NewHBox(
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewLabel(""),
-				widget.NewButton("Edit", nil),
-				widget.NewButton("Hapus", nil),
-			)
+			return container.NewHBox(widget.NewLabel(""))
 		},
-		func(i widget.ListItemID, item fyne.CanvasObject) {
-			c := item.(*fyne.Container)
-			c.Objects[0].(*widget.Label).SetText(doctors[i].ID)
-			c.Objects[1].(*widget.Label).SetText(doctors[i].Nama)
-			c.Objects[2].(*widget.Label).SetText(doctors[i].Spesialisasi)
-			c.Objects[3].(*widget.Label).SetText(doctors[i].Jadwal)
+		func(id widget.TableCellID, cell fyne.CanvasObject) {
+			box := cell.(*fyne.Container)
+			if len(box.Objects) == 0 {
+				box.Add(widget.NewLabel(""))
+			}
+			label := box.Objects[0].(*widget.Label)
 
-			editBtn := c.Objects[4].(*widget.Button)
-			editBtn.OnTapped = func() {
-				showEditDoctorForm(doctors[i])
+			if id.Row == 0 { // Header
+				label.TextStyle = fyne.TextStyle{Bold: true}
+				label.Alignment = fyne.TextAlignCenter
+				switch id.Col {
+				case 0:
+					label.SetText("ID")
+				case 1:
+					label.SetText("Nama")
+				case 2:
+					label.SetText("Spesialisasi")
+				case 3:
+					label.SetText("Jadwal")
+				case 4:
+					label.SetText("Edit")
+				case 5:
+					label.SetText("Hapus")
+				}
+				return
 			}
 
-			deleteBtn := c.Objects[5].(*widget.Button)
-			deleteBtn.OnTapped = func() {
-				confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus dokter ini?", func(b bool) {
-					if b {
-						HapusDokter(doctors[i].ID)
-						showDoctorManagement()
-					}
-				}, myWindow)
-				confirm.Show()
+			doctor := doctors[id.Row-1]
+			switch id.Col {
+			case 0:
+				label.SetText(doctor.ID)
+			case 1:
+				label.SetText(doctor.Nama)
+			case 2:
+				label.SetText(doctor.Spesialisasi)
+			case 3:
+				label.SetText(doctor.Jadwal)
+			case 4:
+				box.Objects[0] = widget.NewButton("Edit", func() {
+					showEditDoctorForm(doctor)
+				})
+			case 5:
+				box.Objects[0] = widget.NewButton("Hapus", func() {
+					confirm := dialog.NewConfirm("Konfirmasi", "Apakah Anda yakin ingin menghapus dokter ini?", func(b bool) {
+						if b {
+							HapusDokter(doctor.ID)
+							showDoctorManagement()
+						}
+					}, myWindow)
+					confirm.Show()
+				})
 			}
 		},
 	)
 
-	header := container.NewGridWithColumns(4,
-		widget.NewLabelWithStyle("ID", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Nama", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Spesialisasi", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Jadwal", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-	)
+	// Set column widths
+	table.SetColumnWidth(0, 100) // ID
+	table.SetColumnWidth(1, 200) // Nama
+	table.SetColumnWidth(2, 200) // Spesialisasi
+	table.SetColumnWidth(3, 250) // Jadwal
+	table.SetColumnWidth(4, 80)  // Edit
+	table.SetColumnWidth(5, 80)  // Hapus
 
 	content := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle("Manajemen Dokter", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-			header,
-			widget.NewSeparator(),
 		),
 		container.NewHBox(
 			layout.NewSpacer(),
@@ -602,7 +661,7 @@ func showDoctorManagement() {
 			layout.NewSpacer(),
 		),
 		nil, nil,
-		list,
+		table,
 	)
 
 	myWindow.SetContent(content)

@@ -1,0 +1,23 @@
+[
+  {
+    "Kode": "OBT001",
+    "Nama": "Paracetamol",
+    "Stok": 100,
+    "Harga": 5000,
+    "Kategori": "pereda_nyeri"
+  },
+  {
+    "Kode": "OBT002",
+    "Nama": "Amoxicillin",
+    "Stok": 50,
+    "Harga": 15000,
+    "Kategori": "antibiotik"
+  },
+  {
+    "Kode": "OBT003",
+    "Nama": "Omeprazole",
+    "Stok": 75,
+    "Harga": 12000,
+    "Kategori": "antasida"
+  }
+]

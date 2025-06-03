@@ -33,21 +33,17 @@ type Obat struct {
 	Kategori string
 }
 
-var daftarDokter = []Dokter{
-	{"D001", "Dr. Ahmad", "Umum", "Senin-Jumat 08:00-16:00"},
-	{"D002", "Dr. Siti", "Kardio", "Selasa-Kamis 09:00-17:00"},
-	{"D003", "Dr. Budi", "Anak", "Rabu-Sabtu 10:00-18:00"},
-	{"D004", "Dr. Zaek", "Kulit", "Senin-Sabtu 10:00-18:00"},
-}
-
-var daftarObat = []Obat{
-	{"OBT001", "Paracetamol", 100, 5000, "pereda_nyeri"},
-	{"OBT002", "Amoxicillin", 50, 15000, "antibiotik"},
-	{"OBT003", "Omeprazole", 75, 12000, "antasida"},
-}
-
+var daftarDokter []Dokter
+var daftarObat []Obat
 var daftarPasien []Pasien
 
+const (
+	pasienFile = "data_pasien.json"
+	dokterFile = "data_dokter.json"
+	obatFile   = "data_obat.json"
+)
+
+// Memuat file Pasien
 func SimpanPasienKeFile(filename string) error {
 	data, err := json.MarshalIndent(daftarPasien, "", "  ")
 	if err != nil {
@@ -62,6 +58,40 @@ func MuatPasienDariFile(filename string) error {
 		return err
 	}
 	return json.Unmarshal(data, &daftarPasien)
+}
+
+// Memuat file Dokter
+func SimpanDokterKeFile(filename string) error {
+	data, err := json.MarshalIndent(daftarDokter, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+func MuatDokterDariFile(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &daftarDokter)
+}
+
+// Memuat file Obat
+func SimpanObatKeFile(filename string) error {
+	data, err := json.MarshalIndent(daftarObat, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+func MuatObatDariFile(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &daftarObat)
 }
 
 // CRUD Pasien
@@ -88,6 +118,8 @@ func HapusPasien(id string) {
 	}
 }
 
+// Mengurutkan Pasien berdasarkan prioritas
+// Menggunakan Bubble Sort
 func GetPasienTerurutPrioritas() []Pasien {
 	patients := make([]Pasien, len(daftarPasien))
 	copy(patients, daftarPasien)
@@ -105,6 +137,7 @@ func GetPasienTerurutPrioritas() []Pasien {
 // CRUD Obat
 func TambahObat(o Obat) {
 	daftarObat = append(daftarObat, o)
+	_ = SimpanObatKeFile(obatFile)
 }
 
 func UpdateObat(o Obat) {
@@ -114,6 +147,7 @@ func UpdateObat(o Obat) {
 			break
 		}
 	}
+	_ = SimpanObatKeFile(obatFile)
 }
 
 func HapusObat(kode string) {
@@ -123,8 +157,11 @@ func HapusObat(kode string) {
 			break
 		}
 	}
+	_ = SimpanObatKeFile(obatFile)
 }
 
+// Mengurutkan Obat berdasarkan harga
+// Menggunakan Selection Sort
 func GetObatTerurutHarga() []Obat {
 	medicines := make([]Obat, len(daftarObat))
 	copy(medicines, daftarObat)
@@ -144,6 +181,7 @@ func GetObatTerurutHarga() []Obat {
 // CRUD Dokter
 func TambahDokter(d Dokter) {
 	daftarDokter = append(daftarDokter, d)
+	_ = SimpanDokterKeFile(dokterFile)
 }
 
 func UpdateDokter(d Dokter) {
@@ -153,6 +191,7 @@ func UpdateDokter(d Dokter) {
 			break
 		}
 	}
+	_ = SimpanDokterKeFile(dokterFile)
 }
 
 func HapusDokter(id string) {
@@ -162,8 +201,11 @@ func HapusDokter(id string) {
 			break
 		}
 	}
+	_ = SimpanDokterKeFile(dokterFile)
 }
 
+// Mengurutkan Dokter berdasarkan nama
+// Menggunakan Insertion Sort
 func GetDokterTerurutNama() []Dokter {
 	doctors := make([]Dokter, len(daftarDokter))
 	copy(doctors, daftarDokter)
@@ -179,6 +221,7 @@ func GetDokterTerurutNama() []Dokter {
 	return doctors
 }
 
+// Cari Obat Berdasarkan Kategori
 func CariObatByKategori(searchTerm string) []Obat {
 	medicines := make([]Obat, len(daftarObat))
 	copy(medicines, daftarObat)
@@ -211,6 +254,7 @@ func CariObatByKategori(searchTerm string) []Obat {
 	return foundMedicines
 }
 
+// Cari Dokter Berdasarkan Spesialisasi
 func CariDokterBySpesialisasi(searchTerm string) []Dokter {
 	var foundDoctors []Dokter
 	searchTerm = strings.ToLower(searchTerm)

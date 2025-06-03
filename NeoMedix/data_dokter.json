@@ -1,0 +1,26 @@
+[
+  {
+    "ID": "D001",
+    "Nama": "Dr. Ahmad",
+    "Spesialisasi": "Umum",
+    "Jadwal": "Senin-Jumat 08:00-16:00"
+  },
+  {
+    "ID": "D002",
+    "Nama": "Dr. Siti",
+    "Spesialisasi": "Kardio",
+    "Jadwal": "Selasa-Kamis 09:00-17:00"
+  },
+  {
+    "ID": "D003",
+    "Nama": "Dr. Budi",
+    "Spesialisasi": "Anak",
+    "Jadwal": "Rabu-Sabtu 10:00-18:00"
+  },
+  {
+    "ID": "D004",
+    "Nama": "Dr. Zaek",
+    "Spesialisasi": "Kulit",
+    "Jadwal": "Senin-Sabtu 10:00-18:00"
+  }
+]

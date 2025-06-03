@@ -17,9 +17,24 @@ var (
 
 func main() {
 
-	err := MuatPasienDariFile("data_pasien.json")
+	// Muat data dari file
+	err := MuatPasienDariFile(pasienFile)
 	if err != nil {
 		fmt.Println("Gagal memuat data pasien:", err)
+	}
+
+	err = MuatDokterDariFile(dokterFile)
+	if err != nil {
+		fmt.Println("Gagal memuat data dokter:", err)
+		// Jika file tidak ada, buat dengan data default
+		_ = SimpanDokterKeFile(dokterFile)
+	}
+
+	err = MuatObatDariFile(obatFile)
+	if err != nil {
+		fmt.Println("Gagal memuat data obat:", err)
+		// Jika file tidak ada, buat dengan data default
+		_ = SimpanObatKeFile(obatFile)
 	}
 
 	myApp = app.New()
