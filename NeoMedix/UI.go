@@ -541,6 +541,7 @@ func showEditMedicineForm(medicine Obat) {
 	myWindow.SetContent(container.NewBorder(nil, nil, nil, nil, content))
 }
 
+// Show sorted medicines
 func showSortedMedicines() {
 	medicines := GetObatTerurutHarga()
 
